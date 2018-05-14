@@ -20,7 +20,7 @@ public class Controller1 {
 	}
 	
 	@GetMapping()
-	public String sayHelddddd2() {
+	public String noFeatures() {
 		return "NO FEATURES";
 		
 	}
