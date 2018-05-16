@@ -56,7 +56,9 @@ public class FeatureFlagRequestCondition implements RequestCondition<FeatureFlag
 				return 1;
 
 		}
-		if (featureFlags.contains(actualFeatureFlag)) {
+		if (this.featureFlags.stream().anyMatch(item -> other.featureFlags.contains(item ))) {
+			return 0;
+		} else if (featureFlags.contains(actualFeatureFlag)) {
 			return -1;
 		} else
 			return 1;
