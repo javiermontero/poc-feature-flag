@@ -14,7 +14,7 @@ public class Controller2 {
 	@GetMapping
 	@FeatureFlag(Feature.TWO)
 	public String featureDos() {
-		return Feature.TWO.getfWord();
+		return Feature.TWO.getValue();
 		
 	}
 

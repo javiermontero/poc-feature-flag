@@ -4,14 +4,14 @@ public enum Feature {
 	
 	ONE("one"),TWO("two"),THREE("three");
 	
-	private final String fWord;
+	private final String value;
 	
-	private Feature(String word) {
-		this.fWord =word;
+	Feature(String v) {
+		this.value = v;
 	}
 
-	public String getfWord() {
-		return fWord;
+	public String getValue() {
+		return value;
 	}
 
 }

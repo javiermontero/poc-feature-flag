@@ -15,7 +15,7 @@ public class Controller1 {
 	@GetMapping()
 	@FeatureFlag({Feature.ONE,Feature.THREE})
 	public String featureUnoTres() {
-		return Feature.ONE.getfWord() + Feature.THREE.getfWord();
+		return Feature.ONE.getValue() + Feature.THREE.getValue();
 		
 	}
 	
