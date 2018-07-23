@@ -2,6 +2,7 @@ package com.pocft.rest.handler;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,39 +23,33 @@ import com.pocft.PftConstants;
 public class FeatureFlagRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 	
 	@Override
-	protected RequestCondition<?> getCustomTypeCondition(Class<?> handlerType) {
+	protected RequestCondition<FeatureFlagRequestCondition> getCustomTypeCondition(Class<?> handlerType) {
 		final FeatureFlag typeAnnotation = AnnotationUtils.findAnnotation(handlerType, FeatureFlag.class);
 		return createCondition(typeAnnotation);
 	}
 	
 	@Nullable
 	protected  RequestMappingInfo getMatchingMapping(RequestMappingInfo mapping, HttpServletRequest request) {
-		final RequestCondition<?> matchingCondition = (RequestCondition<?>) mapping.getCustomCondition();
-		
-		
-		if (matchingCondition==null) {
-		//if call to mapping without @FeatureFlag with a FeatureFlag in the Header --> not mapping.
-			if (request.getHeader(PftConstants.FT_HEADER)==null) {
-				return mapping;
-			}else return null;
-		
-		} else 	if  (matchingCondition.getMatchingCondition(request)!=null) {
-			return mapping;
-		}
-		return null;
+		final Optional<RequestCondition<FeatureFlagRequestCondition>> nullableMatchingCondition = Optional.ofNullable((RequestCondition<FeatureFlagRequestCondition>) mapping.getCustomCondition());
+		return !nullableMatchingCondition.isPresent()? handlerNotFoundMatchingCondition(mapping, request):handlerFoundMatchingCondition(mapping, request, nullableMatchingCondition.get());
 	}
 
 	@Override
-	protected RequestCondition<?> getCustomMethodCondition(Method method) {
+	protected RequestCondition<FeatureFlagRequestCondition> getCustomMethodCondition(Method method) {
 		final FeatureFlag methodAnnotation = AnnotationUtils.findAnnotation(method, FeatureFlag.class);
 		return createCondition(methodAnnotation);
 	}
 
-	private RequestCondition<?> createCondition(FeatureFlag accessMapping) {
-		
+	private RequestCondition<FeatureFlagRequestCondition> createCondition(FeatureFlag accessMapping) {
 		return (accessMapping == null) ?  null: new FeatureFlagRequestCondition(Arrays.asList(accessMapping.value()));
-				
 	}
 
+	private RequestMappingInfo handlerNotFoundMatchingCondition(RequestMappingInfo mapping, HttpServletRequest request) {
+		return request.getHeader(PftConstants.FT_HEADER)==null? mapping:null;
+	}
+
+	private RequestMappingInfo handlerFoundMatchingCondition(RequestMappingInfo mapping, HttpServletRequest request, RequestCondition<FeatureFlagRequestCondition> mCondition) {
+		return mCondition.getMatchingCondition(request) != null? mapping:null;
+	}
 
 }
